@@ -19,7 +19,7 @@ app.use(express.urlencoded({extended: true}))
 
 // userNfts api
 const userNfts = require('./api/userNfts');
-app.use('/api/userNfts', userNfts);
+app.use('/api/cryptopuffs', userNfts);
 
 app.use(express.static(path.join(__dirname, './build')))
 app.get('*', (req, res) => {
