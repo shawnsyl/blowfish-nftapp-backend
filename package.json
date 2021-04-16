@@ -1,5 +1,9 @@
 {
   "main": "app.js",
+  "engines": {
+    "node": "14.x",
+    "yarn": "1.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=develop && nodemon app.js"
@@ -19,5 +23,5 @@
     "nodemon": "^2.0.7"
   },
   "proxy": "http://localhost:5000",
-  "version": "0.0.0"
+  "version": "1.0.0"
 }
