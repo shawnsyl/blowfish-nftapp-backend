@@ -8,8 +8,6 @@ const path = require('path');
 require('./database');
 require('dotenv').config({path: path.resolve(__dirname+'/.env')});
 
-const testContract = require('./abi/TestContract.json');
-
 const app = express();
 
 app.use(cors())
@@ -37,4 +35,4 @@ cron.schedule('* * * * *', () => {
     console.log('running a task every minute to update db');
 });
 
-console.log('hey', process.env.NODE_ENV);
+console.log('hey', process.env.KEK);
