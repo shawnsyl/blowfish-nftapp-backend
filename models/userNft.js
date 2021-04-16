@@ -9,6 +9,10 @@ const userNftSchema = new Schema({
     puffOwner: {
         type: String,
         required: true
+    },
+    dateMinted: {
+        type: Number,
+        required: false
     }
 })
 module.exports = mongoose.model("UserNft", userNftSchema, "userNfts")
