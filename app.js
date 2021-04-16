@@ -31,8 +31,6 @@ app.listen(port, async () => {
     console.log(`Server started on port ${port}`);
 });
 
-cron.schedule('* * * * *', () => {
-    console.log('running a task every minute to update db');
-});
-
-console.log('hey', process.env.KEK);
+// cron.schedule('* * * * *', () => {
+//     console.log('running a task every minute to update db');
+// });
