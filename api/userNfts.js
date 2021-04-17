@@ -80,7 +80,7 @@ const getUpdatedCryptoPuffs = (user, numPuffs, contract, page, sortBy, res) => {
 
                             const paginatedResults = getPaginated([...puffsInDb, ...newPuffs], page, sortBy);
                             return res.json({
-                                puffs: paginatedResults
+                                cryptopuffs: paginatedResults
                             })
 
                         })
@@ -152,7 +152,7 @@ router.get('/', (req, res) => {
                         } else {
                             const paginatedResults = getPaginated(puffs, page, sortBy);
                             return res.json({
-                                puffs: paginatedResults
+                                cryptopuffs: paginatedResults
                             })
                         }
                     })
@@ -169,7 +169,7 @@ router.get('/', (req, res) => {
         UserNft.find()
             .then(puffs => {
                 return res.json({
-                    puffs: getPaginated(puffs, page, sortBy)
+                    cryptopuffs: getPaginated(puffs, page, sortBy)
                 })
             })
             .catch(err => res.status(400).json({
