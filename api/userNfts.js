@@ -6,7 +6,8 @@ const UserNft = require('./../models/userNft')
 const testContract = require('./../abi/TestContract.json');
 
 // web 3 setup
-const web3ProviderUrl = process.env.NODE_ENV === 'develop' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://bsc-dataseed1.binance.org:443'
+// prod should be https://bsc-dataseed1.binance.org:443
+const web3ProviderUrl = process.env.NODE_ENV === 'develop' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://data-seed-prebsc-1-s1.binance.org:8545' 
 const web3 = new Web3(web3ProviderUrl);
 
 console.log(process.env.NODE_ENV, web3ProviderUrl)
