@@ -20,10 +20,6 @@ const userNfts = require('./api/userNfts');
 app.use('/api/cryptopuffs', userNfts);
 
 app.use(express.static(path.join(__dirname, './build')))
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, './build'))
-})
-
 
 // start server
 const port = process.env.PORT || 5000;
