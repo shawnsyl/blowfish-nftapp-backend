@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=develop && export NODE_ENV && nodemon app.js",
-    "start": "nodemon app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "@truffle/contract": "^4.3.13",
