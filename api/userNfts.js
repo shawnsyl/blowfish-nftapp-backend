@@ -7,10 +7,8 @@ const testContract = require('./../abi/TestContract.json');
 
 // web 3 setup
 // prod should be https://bsc-dataseed1.binance.org:443
-const web3ProviderUrl = process.env.NODE_ENV === 'develop' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://data-seed-prebsc-1-s1.binance.org:8545' 
+const web3ProviderUrl = process.env.IS_STAGING === 'TRUE' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://data-seed-prebsc-1-s1.binance.org:8545' 
 const web3 = new Web3(web3ProviderUrl);
-
-console.log(process.env.NODE_ENV, web3ProviderUrl)
 
 const PAGE_SIZE = 12;
 
@@ -140,14 +138,12 @@ router.get('/', (req, res) => {
 
     if (!!puffOwner) {
         const contract = new web3.eth.Contract(
-            testContract,
-            process.env.TEST_PUFF_CONTRACT,
+            process.env.IS_STAGING === 'TRUE' ? testContract : testContract,
+            process.env.IS_STAGING === 'TRUE' ? process.env.TEST_PUFF_CONTRACT : process.env.TEST_PUFF_CONTRACT,
             {
                 from: puffOwner
             }
         );
-
-        console.log(puffOwner);
 
         if (puffOwner) {
             queryObj = {...queryObj, puffOwner: puffOwner}
