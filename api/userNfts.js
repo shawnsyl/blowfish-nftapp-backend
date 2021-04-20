@@ -168,7 +168,7 @@ router.get('/', (req, res) => {
                         } else {
                             if (puffs.length !== parseInt(numPuffs)) {
                                 // hopefully this never happens - db is not synced to blockchain
-                                getUpdatedCryptoPuffs(user, numPuffs, contract, page, sortBy, res)
+                                getUpdatedCryptoPuffs(puffOwner ? puffOwner : user, numPuffs, contract, page, sortBy, res)
                             } else {
                                 const paginatedResults = getPaginated(puffs, page, sortBy);
                                 return res.json({
