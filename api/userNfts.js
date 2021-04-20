@@ -130,31 +130,51 @@ const getPaginated = (results, page, sortBy) => {
 
 router.get('/', (req, res) => {
     const {
-        user,
         page,
-        sortBy
+        puffId,
+        sortBy,
+        user,
+        puffOwner
     } = req.query;
 
-    if (user) {
+    if (!!user || !!puffId) {
         const contract = new web3.eth.Contract(
             testContract,
             process.env.TEST_PUFF_CONTRACT,
             {
-                from: user
+                from: puffOwner ? puffOwner : user
             }
         );
+
+        let queryObj = {};
+
+        if (puffOwner) {
+            queryObj = {...queryObj, puffOwner: puffOwner}
+        }
+
+        if (puffId) {
+            queryObj = {...queryObj, puffId: puffId}
+        }
     
         contract.methods.balanceOf(user).call()
             .then(numPuffs => {
-                UserNft.find({puffOwner: user})
+                UserNft.find(queryObj)
                     .then(puffs => {
-                        if (puffs.length !== parseInt(numPuffs)) {
-                            getUpdatedCryptoPuffs(user, numPuffs, contract, page, sortBy, res)
-                        } else {
-                            const paginatedResults = getPaginated(puffs, page, sortBy);
+                        if (puffId) {
+                            // search only by puffId
                             return res.json({
-                                cryptopuffs: paginatedResults
+                                cryptopuffs: puffs
                             })
+                        } else {
+                            if (puffs.length !== parseInt(numPuffs)) {
+                                // hopefully this never happens - db is not synced to blockchain
+                                getUpdatedCryptoPuffs(user, numPuffs, contract, page, sortBy, res)
+                            } else {
+                                const paginatedResults = getPaginated(puffs, page, sortBy);
+                                return res.json({
+                                    cryptopuffs: paginatedResults
+                                })
+                            }
                         }
                     })
                     .catch(err => res.status(400).json({
