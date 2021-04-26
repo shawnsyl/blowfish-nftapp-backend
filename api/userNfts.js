@@ -105,7 +105,11 @@ const getUpdatedCryptoPuffs = (user, numPuffs, contract, page, sortBy, res) => {
 }
 
 const getPaginated = (results, page, sortBy) => {
-    let sortedResults = results;
+    let sortedResults = results.filter((puff, index, self) =>
+        index === self.findIndex((t) => (
+            t.puffId === puff.puffId
+        ))
+    )
         
     if (sortBy === 'puffId' || !sortBy) {
         sortedResults = results.sort((a, b) => {
