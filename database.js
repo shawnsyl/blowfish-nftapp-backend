@@ -9,5 +9,5 @@ const dbUri = process.env.IS_STAGING === 'TRUE' ? 'blowf-cluster.yp2un.mongodb.n
 const connection = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${dbUri}/blowf?retryWrites=true&w=majority`
 
 mongoose.connect(connection,{ useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
-    .then(() => console.log("Database Connected Successfully"))
+    .then(() => console.log(dbUri, "Database Connected Successfully"))
     .catch(err => console.log(err));
