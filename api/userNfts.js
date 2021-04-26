@@ -4,13 +4,14 @@ const router = express.Router();
 
 const UserNft = require('./../models/userNft')
 const testContract = require('./../abi/TestContract.json');
+const mainContract = require('./../abi/MainContract.json');
 
 // web 3 setup
 // prod should be https://bsc-dataseed1.binance.org:443
-const web3ProviderUrl = process.env.IS_STAGING === 'TRUE' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://data-seed-prebsc-1-s1.binance.org:8545' 
+const web3ProviderUrl = process.env.IS_STAGING === 'TRUE' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://bsc-dataseed1.binance.org:443' 
 const web3 = new Web3(web3ProviderUrl);
-const contractAbi = process.env.IS_STAGING === 'TRUE' ? testContract : testContract;
-const contractAddress = process.env.IS_STAGING === 'TRUE' ? process.env.TEST_PUFF_CONTRACT : process.env.TEST_PUFF_CONTRACT;
+const contractAbi = process.env.IS_STAGING === 'TRUE' ? testContract : mainContract;
+const contractAddress = process.env.IS_STAGING === 'TRUE' ? process.env.TEST_PUFF_CONTRACT : process.env.MAIN_PUFF_CONTRACT;
 
 const PAGE_SIZE = 12;
 
