@@ -104,7 +104,7 @@ const getUpdatedCryptoPuffs = (user, numPuffs, contract, page, sortBy, res) => {
         }));
 }
 
-const getPaginated = (results, page, sortBy) => {
+const getPaginated = (results, page, sortBy, pageSize = PAGE_SIZE) => {
     let sortedResults = results.filter((puff, index, self) =>
         index === self.findIndex((t) => (
             t.puffId === puff.puffId
@@ -112,13 +112,13 @@ const getPaginated = (results, page, sortBy) => {
     )
         
     if (sortBy === 'puffId' || !sortBy) {
-        sortedResults = results.sort((a, b) => {
+        sortedResults = sortedResults.sort((a, b) => {
             return a.puffId - b.puffId
         });
     }
 
     if (sortBy === 'dateMinted') {
-        sortedResults = results.sort((a, b) => {
+        sortedResults = sortedResults.sort((a, b) => {
             return a.dateMinted - b.dateMinted
         });
     }
@@ -126,9 +126,9 @@ const getPaginated = (results, page, sortBy) => {
     if (!page) {
         return sortedResults;
     } else {
-        const startingPage = PAGE_SIZE * (page - 1)
+        const startingPage = pageSize * (page - 1)
     
-        const paginatedResults = sortedResults.slice(startingPage, PAGE_SIZE * page);
+        const paginatedResults = sortedResults.slice(startingPage, pageSize * page);
         return paginatedResults;
     }
 }
@@ -138,7 +138,8 @@ router.get('/', (req, res) => {
         page,
         puffId,
         sortBy,
-        puffOwner
+        puffOwner,
+        pageSize
     } = req.query;
 
     let queryObj = {};
@@ -187,7 +188,7 @@ router.get('/', (req, res) => {
         UserNft.find(queryObj)
             .then(puffs => {
                 return res.json({
-                    cryptopuffs: getPaginated(puffs, page, sortBy)
+                    cryptopuffs: getPaginated(puffs, page, sortBy, pageSize)
                 })
             })
             .catch(err => res.status(400).json({
