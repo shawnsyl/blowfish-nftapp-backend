@@ -8,10 +8,10 @@ const mainContract = require('./../abi/MainContract.json');
 
 // web 3 setup
 // prod should be https://bsc-dataseed1.binance.org:443
-const web3ProviderUrl = process.env.IS_STAGING === 'TRUE' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://bsc-dataseed1.binance.org:443' 
+const web3ProviderUrl = process.env.IS_STAGING === 'TRUE' || process.env.NODE_ENV == 'develop' ? 'https://data-seed-prebsc-1-s1.binance.org:8545' : 'https://bsc-dataseed1.binance.org:443' 
 const web3 = new Web3(web3ProviderUrl);
-const contractAbi = process.env.IS_STAGING === 'TRUE' ? testContract : mainContract;
-const contractAddress = process.env.IS_STAGING === 'TRUE' ? process.env.TEST_PUFF_CONTRACT : process.env.MAIN_PUFF_CONTRACT;
+const contractAbi = process.env.IS_STAGING === 'TRUE' || process.env.NODE_ENV == 'develop' ? testContract : mainContract;
+const contractAddress = process.env.IS_STAGING === 'TRUE' || process.env.NODE_ENV == 'develop' ? process.env.TEST_PUFF_CONTRACT : process.env.MAIN_PUFF_CONTRACT;
 
 const PAGE_SIZE = 12;
 
@@ -149,8 +149,8 @@ router.get('/', (req, res) => {
     } = req.query;
 
     let queryObj = {};
-
     if (!!puffOwner) {
+        queryObj = {...queryObj, puffOwner: puffOwner}
         const contract = new web3.eth.Contract(
             contractAbi,
             contractAddress,
@@ -159,18 +159,18 @@ router.get('/', (req, res) => {
             }
         );
 
-        if (puffOwner) {
-            queryObj = {...queryObj, puffOwner: puffOwner}
-        }
+        console.log(puffOwner)
     
         contract.methods.balanceOf(puffOwner).call()
             .then(numPuffs => {
+                console.log(numPuffs);
                 UserNft.find(queryObj)
                     .then(puffs => {
                         if (puffs.length !== parseInt(numPuffs)) {
                             // hopefully this never happens - db is not synced to blockchain
                             getUpdatedCryptoPuffs(puffOwner, numPuffs, contract, page, sortBy, res)
                         } else {
+                            console.log(puffs);
                             const paginatedResults = getPaginated(puffs, page, sortBy);
                             return res.json({
                                 cryptopuffs: paginatedResults
@@ -187,23 +187,49 @@ router.get('/', (req, res) => {
                 "message": "Error fetching crypto puff data blockchain!"
             }))
     } else {
-        if (puffId) {
-            queryObj = {...queryObj, puffId: puffId}
-        }
+        UserNft.countDocuments({})
+            .then(numDocs => {
+                if (!!page && !!numDocs) {
+                    let startId, endId;
+                    const size = !!pageSize ? pageSize : PAGE_SIZE;
+                    if (sortBy === 'puffId-desc') {
+                        endId = numDocs - size * (page - 1) - 1;
+                        if (endId <= 0) {
+                            return res.json({
+                                cryptopuffs: []
+                            })
+                        }
+                        startId = endId + 1 - size <= 0 ? 0 : endId + 1 - size;
+                    } else {
+                        startId = size * (page - 1);
+                        if (startId >= numDocs) {
+                            return res.json({
+                                cryptopuffs: []
+                            })
+                        }
+                        endId = startId + size - 1 >= numDocs ?  numDocs : startId + size - 1;
+                    }
+                    queryObj = {...queryObj, puffId: { $gte : startId, $lte : endId}};
+                }
 
-        UserNft.find(queryObj)
-            .then(puffs => {
-                return res.json({
-                    cryptopuffs: getPaginated(puffs, page, sortBy, pageSize)
-                })
+                if (!!puffId) {
+                    queryObj = {...queryObj, puffId: puffId}
+                }
+        
+                UserNft.find(queryObj).sort({"puffId": 1})
+                    .then(puffs => {
+                        return res.json({
+                            cryptopuffs: puffs
+                            // cryptopuffs: getPaginated(puffs, page, sortBy, pageSize)
+                        })
+                    })
+                    .catch(err => res.status(400).json({
+                        "error":  err,
+                        "message": "Error fetching crypto puffs from db!"
+                    }))
             })
-            .catch(err => res.status(400).json({
-                "error":  err,
-                "message": "Error fetching crypto puffs from db!"
-            }))
     }
-})
-
+});
 router.post('/add', (req, res) => {
     const { puffOwner, puffId, dateMinted } = req.body;
 
