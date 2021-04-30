@@ -117,6 +117,12 @@ const getPaginated = (results, page, sortBy, pageSize = PAGE_SIZE) => {
         });
     }
 
+    if (sortBy === 'puffId-desc') {
+        sortedResults = sortedResults.sort((a, b) => {
+            return b.puffId - a.puffId
+        });
+    }
+
     if (sortBy === 'dateMinted') {
         sortedResults = sortedResults.sort((a, b) => {
             return a.dateMinted - b.dateMinted
