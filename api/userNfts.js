@@ -15,6 +15,19 @@ const contractAddress = process.env.IS_STAGING === 'TRUE' || process.env.NODE_EN
 
 const PAGE_SIZE = 12;
 
+const queryBlockchain = async (method, args) => {
+    if (args) {
+        console.log(args);
+        const result = contract.methods[method](args).call()
+        if (result)
+            return result;
+    } else {
+        const result = contract.methods[method].call()
+        if (result)
+            return result;
+    }
+}
+
 const getTokenByOwnerIndex = async (user, i, contract) => {
     const puffId = await contract.methods.tokenOfOwnerByIndex(user, i).call()
 
