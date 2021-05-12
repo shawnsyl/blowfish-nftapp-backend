@@ -260,4 +260,18 @@ router.post('/add', (req, res) => {
         }))
 })
 
+router.post('/remove', (req, res) => {
+    const { puffId } = req.body;
+    console.log('remove ', puffId)
+
+    UserNft.deleteOne({ puffId: puffId })
+        .then(() => res.json({
+            message: 'Removed crypto puff from db succesfully'
+        }))
+        .catch(err => res.status(400).json({
+            "error":  err,
+            "message": "Error removing crypto puff from db!"
+        }))
+})
+
 module.exports = router 
